@@ -1,69 +1,51 @@
 <?php
-// Define root dir and root path
-define( 'PG_DS', DIRECTORY_SEPARATOR );
-define( 'PG_ROOT_DIR', dirname( __FILE__ ) . PG_DS );
-define( 'PG_ROOT_PATH', basename( dirname( __FILE__ ) ) . PG_DS );
-define( 'PG_ROOT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/cframe/' );
+session_start();
 
+include_once('includes/config.php');
 
-// Define the request home that will always persist in REQUEST_URI
-$request_home = PG_DS . PG_ROOT_PATH;
-
-// Read the request
-$request = $_SERVER['REQUEST_URI'];
-$components = array();
-$controller = 'Master';
-$method = 'index';
-$admin_routing = false;
-$param = array();
-
-$master_controller = new \Controllers\Master_Controller();
-
-if ( ! empty( $request ) ) {
-    if( 0 === strpos( $request, $request_home ) ) {
-        // Clean the request
-        $request = substr( $request, strlen( $request_home ) );
-
-
-        // Switch to admin routing
-        if( 0 === strpos( $request, 'admin' ) ) {
-            $admin_routing = true;
-            include_once 'controllers/admin/admin_controller.php';
-            $request = substr( $request, strlen( 'admin/' ) );
-        }
-
-
-        // Fetch the controller, method and params if any
-        $components = explode( PG_DS, $request, 3 );
-        // Get controller and such
-        if ( 1 < count( $components ) ) {
-            list( $controller, $method ) = $components;
-
-            $param = isset( $components[2] ) ? $components[2] : array();
-        }
+// Extract the $controllerName, $actionName and $params from the HTTP request
+$requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$requestParts = explode('/', $requestPath);
+$controllerName = DEFAULT_CONTROLLER;
+if (count($requestParts) >= 2 && $requestParts[1] != '') {
+    $controllerName = strtolower($requestParts[1]);
+    if (! preg_match('/^[a-zA-Z0-9_]+$/', $controllerName)) {
+        die('Invalid controller name. Use letters, digits and underscore only.');
     }
 }
-// If the controller is found
-if ( isset( $controller ) && file_exists( 'controllers/' . $controller . '.php' ) ) {
-    $admin_folder = $admin_routing ? 'admin/' : '';
-    include_once 'controllers/' . $admin_folder . $controller . '.php';
+$actionName = DEFAULT_ACTION;
+if (count($requestParts) >= 3 && $requestParts[2] != '') {
+    $actionName = $requestParts[2];
+    if (! preg_match('/^[a-zA-Z0-9_]+$/', $actionName)) {
+        die('Invalid action name. Use letters, digits and underscore only.');
+    }
+}
+$params = [];
+if (count($requestParts) >= 4) {
+    $params = array_splice($requestParts, 3);
+}
 
-    // Is admin controller?
-    $admin_namespace = $admin_routing ? '\Admin' : '';
-
-    // Form the controller class
-    $controller_class = $admin_namespace . '\Controllers\\' . ucfirst( $controller ) . '_Controller';
-    $instance = new $controller_class();
-
-    // Call the object and the method
-    if( method_exists( $instance, $method ) ) {
-        call_user_func_array( array( $instance, $method ), array( $param ) );
-
-// 		$instance->$method();
+// Load the controller and execute the action
+$controllerClassName = ucfirst($controllerName) . 'Controller';
+if (class_exists($controllerClassName)) {
+    $controller = new $controllerClassName($controllerName, $actionName);
+    if (method_exists($controller, $actionName)) {
+        // Call $controller->$action($params)
+        call_user_func_array(array($controller, $actionName), $params);
+        $controller->renderView();
     } else {
-        // fallback to index
-        call_user_func_array( array( $instance, 'index' ), array() );
+        die ('Error: cannot find action "' . $actionName . '" in controller ' . $controllerClassName);
     }
 } else {
-    $master_controller->home();
+    $controllerFileName = 'controllers/' . $controllerClassName . '.php';
+    die ('Error: cannot find controller: ' . $controllerFileName);
+}
+
+function __autoload($class_name) {
+    if (file_exists("controllers/$class_name.php")) {
+        include "controllers/$class_name.php";
+    }
+    if (file_exists("models/$class_name.php")) {
+        include "models/$class_name.php";
+    }
 }
