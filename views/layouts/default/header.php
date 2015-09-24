@@ -11,8 +11,8 @@
     <a href="/"><img src="/content/images/site-logo.png"></a>
     <ul class="menu">
         <li><a href="/">Home</a></li>
-        <li><a href="/authors">Authors</a></li>
-        <li><a href="/books">Books</a></li>
+        <li><a href="/exhibitions">Изложби</a></li>
+        <li><a href="/paintings">Картини</a></li>
     </ul>
 </header>
 <?php include_once('views/layouts/messages.php'); ?>
