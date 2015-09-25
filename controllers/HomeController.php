@@ -1,7 +1,7 @@
 <?php
 
 class HomeController extends BaseController {
-    protected function onInit() {
+    public function home() {
         $this->title = 'Welcome';
     }
 }

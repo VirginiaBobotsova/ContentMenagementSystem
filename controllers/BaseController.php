@@ -43,14 +43,17 @@ abstract class BaseController {
             if ($viewName == null) {
                 $viewName = $this->action;
             }
-            if (!$isPartial) {
-                include_once('views/layouts/' . $this->layout . '/header.php');
-            }
-            include_once('views/' . $this->controller . '/' . $viewName . '.php');
-            if (!$isPartial) {
-                include_once('views/layouts/' . $this->layout . '/footer.php');
-            }
-            $this->viewRendered = true;
+
+
+                if (!$isPartial) {
+                    include_once('views/layouts/' . $this->layout . '/header.php');
+                }
+                include_once('views/' . $this->controller . '/' . $viewName . '.php');
+                if (!$isPartial) {
+                    include_once('views/layouts/' . $this->layout . '/footer.php');
+                }
+                $this->viewRendered = true;
+
         }
     }
 
