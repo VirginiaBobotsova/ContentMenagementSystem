@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Николай Ангелов - Гари</title>
     <link rel="stylesheet" href="../content/styles/headerStyle.css">
+    <link rel="stylesheet" href="../content/styles/enterStyle.css">
     <link rel="author" href="humans.txt">
 </head>
 <body>
