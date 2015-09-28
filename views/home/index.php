@@ -1,5 +1,5 @@
 
->
+
     <article class="home-article">
         <header class="article-header"><h1></h1></header>
             <div class="info-article">
@@ -12,6 +12,13 @@
             </div>
     </article>
 
+    <aside class="register" >
+        <header class="aside-register-header"><h3><a href="/account/register">Регистрация</a></h3></header>
+        <div class="messages">
+            <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In placerat justo nulla, eget vulputate nulla finibus eu.</span>
+            <span><a href="/account/register">Регистрация</a></span>
+        </div>
+    </aside>
     <aside class="top">
         <header class="aside-top-header"><h1>News</h1></header>
         <div class="news">
@@ -35,16 +42,10 @@
         <div class="messages">
             <span class="date">August 2, 2009</span><br>
             <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In placerat justo nulla, eget vulputate nulla finibus eu. Suspendisse justo lacus, sodales nec nisl vel, euismod fringilla augue. Cras eu ex molestie, sagittis lectus non, ultricies tellus. Nunc ornare dignissim lectus, nec molestie est convallis sit amet. Nulla in lectus ullamcorper lacus sagittis luctus vitae eget quam.</span><br>
-            <span>Author:<span class="author">SoftUni</span></span><br>
-            <a href="#">see all testimonials</a>
+            <span><span class="author">SoftUni</span></span><br>
+            <a href="/events/index">Виж всички събития</a>
         </div>
     </aside>
-    <aside class="registrationForm">
-        <header class="aside-registrationForm"><h1>Messages</h1></header>
-        <p>
 
-        </p>
-
-    </aside>
 
 

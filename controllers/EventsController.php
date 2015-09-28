@@ -1,7 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Bobocov
- * Date: 9/24/2015
- * Time: 8:17 AM
- */
+class EventsController extends BaseController
+{
+    private $db;
+
+    protected function onInit()
+    {
+        $this->title = 'Events';
+        $this->db = new EventsModel();
+    }
+
+    public function index()
+    {
+        $this->authorize();
+        $this->events = $this->db->getAll();
+        $this->renderView();
+    }
+}

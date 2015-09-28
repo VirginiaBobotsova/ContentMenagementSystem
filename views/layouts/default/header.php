@@ -5,8 +5,9 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Николай Ангелов - Гари</title>
-    <link rel="stylesheet" href="../content/styles/headerStyle.css">
-    <link rel="stylesheet" href="../content/styles/enterStyle.css">
+    <link rel="stylesheet" href="../content/styles/mainStyle.css">
+    <link rel="stylesheet" href="../content/styles/formStyle.css">
+    <link rel="stylesheet" href="../content/styles/bootstrap.min.css">
     <link rel="author" href="humans.txt">
 </head>
 <body>
@@ -14,6 +15,18 @@
     <header>
         <div class="page-header">
             <img src="../content/images/gary-header.jpg" alt="Nikolai Angelov - Gary">
+                <?php if (!$this->isLoggedIn): ?>
+                <div class="login">
+                    <a href="/account/login">Вход</a>
+                </div>
+                <?php endif ?>
+                <?php if ($this->isLoggedIn): ?>
+                    <div class="login">
+                        <span>Здравей, <?php echo $_SESSION['username']; ?></span>
+
+                        <form action="/account/logout"><input type="submit" value="Изход"/></form>
+                    </div>
+                <?php endif ?>
             <a href="/"><h1>Николай Ангелов - Гари</h1></a>
         </div>
     </header>
@@ -26,4 +39,4 @@
             <li class="item"><a href="">Контакти</a></li>
         </ul>
     </nav>
-<?php include_once('views/layouts/messages.php'); ?>
+<?php include_once('messages.php'); ?>

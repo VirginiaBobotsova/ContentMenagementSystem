@@ -1,12 +1,18 @@
 <section>
     <header id="section-header"><h1>Изложби</h1></header>
+
+    <?php foreach($this->exhibitions as $exhibition): ?>
     <div class="section-element">
-        <img src="./content/images/pokana_Nikolai_Angelov_Gari_Largo.jpg" alt="image" class="image">
+        <img src="<?php getImage($exhibition[0]) ?>" alt="image" class="image">
         <div class="product">
-            <p><h4>Just try to find me</h4></p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut gravida nunc eu felis auctor, nec accumsan odio egestas. Nullam vitae dui nulla. Fusce fermentum convallis ligula, non porta nibh volutpat nec. Nulla cursus finibus augue eu rutrum.</p>
+            <p><h4><?php echo $exhibition[1] ?></h4></p>
+            <span>?php echo $exhibition[2] ?></span>
+            <span>?php echo $exhibition[3] ?></span>
+            <p><span>?php echo $exhibition[4] ?></span></p>
         </div>
     </div>
+    <?php endforeach ?>
+
     <div class="section-element">
         <img src="images/2.jpg" alt="image" class="image">
         <div class="product">

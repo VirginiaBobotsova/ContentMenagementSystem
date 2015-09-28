@@ -1,16 +1,31 @@
 <?php
 
+
 abstract class BaseController {
     protected $controller;
     protected $action;
     protected $layout = DEFAULT_LAYOUT;
     protected $viewBag = [];
     protected $viewRendered = false;
+    protected $isPost = false;
+    protected $user;
+    protected $isLoggedIn;
 
-    public function __construct($controller, $action) {
+    public function __construct($controller , $action) {
         $this->controller = $controller;
         $this->action = $action;
         $this->onInit();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->$isPost = true;
+        }
+        if (isset($_SESSION['username'])) {
+            $this->$isLoggedIn = true;
+        }
+        if (isset($_SESSION['isAdmin'])) {
+            $this->$isAdmin = true;
+        }
+
     }
 
     public function __get($name) {
@@ -38,18 +53,18 @@ abstract class BaseController {
         $this->renderView();
     }
 
-    public function renderView($viewName = null, $isPartial = false) {
+    public function renderView($viewName = null, $isPartial = true) {
         if (!$this->viewRendered) {
             if ($viewName == null) {
                 $viewName = $this->action;
             }
 
 
-                if (!$isPartial) {
+                if ($isPartial) {
                     include_once('views/layouts/' . $this->layout . '/header.php');
                 }
                 include_once('views/' . $this->controller . '/' . $viewName . '.php');
-                if (!$isPartial) {
+                if ($isPartial) {
                     include_once('views/layouts/' . $this->layout . '/footer.php');
                 }
                 $this->viewRendered = true;
@@ -105,7 +120,8 @@ abstract class BaseController {
 
     protected function authorize() {
         if (! $this->isLoggedIn()) {
-            $this->redirect("users", "login");
+            $this->addErrorMessage(Wlezte);
+            $this->redirect("account", "login");
         }
     }
 
