@@ -1,7 +1,7 @@
 <?php
 
 
-abstract class BaseController {
+ class BaseController {
     protected $controller;
     protected $action;
     protected $layout = DEFAULT_LAYOUT;
@@ -10,6 +10,7 @@ abstract class BaseController {
     protected $isPost = false;
     protected $user;
     protected $isLoggedIn;
+     protected $isAdmin = false;
 
     public function __construct($controller , $action) {
         $this->controller = $controller;
@@ -58,16 +59,17 @@ abstract class BaseController {
             if ($viewName == null) {
                 $viewName = $this->action;
             }
-
-
-                if ($isPartial) {
-                    include_once('views/layouts/' . $this->layout . '/header.php');
-                }
-                include_once('views/' . $this->controller . '/' . $viewName . '.php');
-                if ($isPartial) {
-                    include_once('views/layouts/' . $this->layout . '/footer.php');
-                }
-                $this->viewRendered = true;
+           if ($this->isAdmin()) {
+                $isPartial = false;
+            }
+            if ($isPartial) {
+                include_once('views/layouts/' . $this->layout . '/header.php');
+            }
+            include_once('views/' . $this->controller . '/' . $viewName . '.php');
+            if ($isPartial) {
+                include_once('views/layouts/' . $this->layout . '/footer.php');
+            }
+            $this->viewRendered = true;
 
         }
     }

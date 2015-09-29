@@ -1,43 +1,43 @@
 <?php
-class ExhibitionsModel extends BaseModel {
+class EventsModel extends BaseModel {
     public function getAll() {
-        $statement = self::$db->query("SELECT * FROM exhibitions");
+        $statement = self::$db->query("SELECT * FROM events");
         return $statement->fetch_all(MYSQLI_ASSOC);
     }
 
     public function find($id) {
         $statement = self::$db->prepare(
-            "SELECT * FROM exhibitions WHERE id = ?");
+            "SELECT * FROM events WHERE id = ?");
         $statement->bind_param("i", $id);
         $statement->execute();
         return $statement->get_result()->fetch_assoc();
     }
 
-    public function create($name, $date, $gallery, $comment, $image) {
+    public function create($name, $image, $comment) {
         if ($name == '') {
             return false;
         }
         $statement = self::$db->prepare(
-            "INSERT INTO exhibitions VALUES(NULL, ?, ?, ?, ?, ?)");
-        $statement->bind_param("ssssb", $name, $date, $gallery, $comment, $image);
+            "INSERT INTO events VALUES(NULL, ?, ?, ?)");
+        $statement->bind_param("sbs", $name, $image, $comment);
         $statement->execute();
         return $statement->affected_rows > 0;
     }
 
-    public function edit($id, $name, $date, $gallery, $comment, $image) {
+    public function edit($id, $name, $image, $comment) {
         if ($name == '') {
             return false;
         }
         $statement = self::$db->prepare(
-            "UPDATE exhibitions SET name = ?, $date = ?, $gallery, $comment, $image WHERE id = ?");
-        $statement->bind_param("ssssbi", $name,  $date, $gallery, $comment, $image, $id);
+            "UPDATE events SET name = ?, image = ?, comment = ? WHERE id = ?");
+        $statement->bind_param("sbsi", $name, $image, $comment, $id);
         $statement->execute();
         return $statement->errno == 0;
     }
 
     public function delete($id) {
         $statement = self::$db->prepare(
-            "DELETE FROM exhibitions WHERE id = ?");
+            "DELETE FROM events WHERE id = ?");
         $statement->bind_param("i", $id);
         $statement->execute();
         return $statement->affected_rows > 0;

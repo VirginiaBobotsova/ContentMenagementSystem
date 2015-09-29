@@ -6,7 +6,7 @@ class AccountController extends BaseController {
     private $db;
 
     public function onInit() {
-        $this->$db = new AccountModel();
+        $this->db = new AccountModel();
     }
 
     public function register() {
