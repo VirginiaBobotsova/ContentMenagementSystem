@@ -3,21 +3,26 @@
 class ExhibitionsController extends BaseController {
     private $db;
 
+
     protected function onInit() {
         $this->title = 'Exhibitions';
         $this->db = new ExhibitionsModel();
     }
 
-    public function index() {
+    public function index($page = 0, $pageSize = 3) {
+        $from = $page * $pageSize;
+        $this->page = $page;
+        $this->pageSize = $pageSize;
+        $this->exhibitions = $this->db->getFilteredExhibitions($from, $pageSize);
 
-        $this->exhibitions = $this->db->getAll();
-        $this->renderView();
+        $this->renderView(__FUNCTION__);
     }
 
 
-    public function showExhibitions() {
-        $this->exhibitions = $this->db->getAll();
-        $this->renderView(_Function_, false);
+    public function showExhibition($id) {
+        $this->db = new ExhibitionsModel();
+        $this->exhibitions = $this->db->find($id);
+        $this->renderView();
     }
 
     public function getImage($id) {

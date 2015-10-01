@@ -18,11 +18,22 @@ class AccountModel extends BaseModel {
         return true;
     }
     public function login($username, $password) {
-        $statement = self::$db->prepare("SELECT id, username, password FROM users WHERE username = ?");
+        $statement = self::$db->prepare("SELECT id, username, email, password FROM users WHERE username = ?");
         $statement->bind_param("s", $username);
         $statement->execute();
         $result = $statement->get_result()->fetch_assoc();
         if (password_verify($password, $result['password'])) {
+            return true;
+        }
+        return false;
+    }
+
+    public function admin($username, $password) {
+        $statement = self::$db->prepare("SELECT id, username, email, password FROM users WHERE username = ?");
+        $statement->bind_param("s", $username);
+        $statement->execute();
+        $result = $statement->get_result()->fetch_assoc();
+        if (password_verify($password, $result['password']) && $this->isAdmin === true) {
             return true;
         }
         return false;

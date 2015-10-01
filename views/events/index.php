@@ -1,14 +1,12 @@
 <section>
-    <header id="section-header"><h1>Изложби</h1></header>
+    <header id="section-header"><h1>Events</h1></header>
 
-    <?php foreach($this->exhibitions as $exhibition): ?>
+    <?php foreach($this->events as $event): ?>
         <div class="section-element">
-            <img src="<?php echo $exhibition["image"] ?>" alt="image" class="image">
+            <img src="<?php echo $event["image"] ?>" alt="image" class="image">
             <div class="product">
-                <p><h4><?php echo $exhibition["name"] ?></h4></p>
-                <span><?php echo $exhibition["date"] ?></span>
-                <span><?php echo $exhibition["gallery"] ?></span>
-                <p><span><?php echo $exhibition["comment"] ?></span></p>
+                <p><h4><?php echo $event["name"] ?></h4></p>
+                <p><span><?php echo $event["comment"] ?></span></p>
             </div>
         </div>
     <?php endforeach ?>
@@ -41,7 +39,3 @@
         <a href="#">see all testimonials</a>
     </div>
 </aside>
-
-
-<a href="/exhibitions/index/<?= $this->page - 1?>/<?= $this->pageSize ?>">Prev</a>
-<a href="/exhibitions/index/<?= $this->page + 1?>/<?= $this->pageSize ?>">Next</a>

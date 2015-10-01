@@ -4,6 +4,7 @@ class AdminController extends BaseController
 {
     private $db;
 
+
     public function __construct( $controller = '\Controllers\AdminController', $action = '/views/admin/' ) {
         parent::__construct( $controller, $action );
         $this->controller = $controller;
@@ -11,18 +12,46 @@ class AdminController extends BaseController
         $this->onInit();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->$isPost = true;
+            $this->isPost = true;
         }
         if (isset($_SESSION['username'])) {
-            $this->$isLoggedIn = true;
+            $this->isLoggedIn = true;
         }
         if (isset($_SESSION['isAdmin'])) {
-            $this->$isAdmin = true;
+            $this->isAdmin = true;
         }
 
     }
-    public function index() {
 
+    public function index() {
+        $this->redirect("admin", "adminLogin");
+    }
+    public function adminLogin() {
+        if ($this->isPost()) {
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+            $isAdmin = $this->db->admin($username, $password);
+            if ($isAdmin) {
+                $_SESSION['username'] = $username;
+                $this->addInfoMessage("Успешен вход");
+                return $this->redirect("admin", "controlPanel");
+            }
+            else {
+                $this->addErrorMessage("Неуспешен вход");
+                return $this->renderViewAdmin("adminLogin", false);
+            }
+        }
+        $this->renderViewAdmin("adminLogin", false);
+    }
+
+    public function logout() {
+        unset($_SESSION['username']);
+        $this->addInfoMessage("Изход");
+        $this->redirect("admin", "adminLogin");
+    }
+
+    public function controlPanel() {
+        $this->renderViewAdmin(__FUNCTION__);
     }
 
     public function createExhibition() {
@@ -32,69 +61,86 @@ class AdminController extends BaseController
             $date = $_POST['date'];
             $gallery = $_POST['gallery'];
             $comment = $_POST['comment'];
+            $text = $_POST['text'];
             $image = $_POST['image'];
-            if ($this->db->create($name, $date, $gallery, $comment, $image)) {
+            if ($this->db->create($name, $date, $gallery, $comment, $text, $image)) {
                 $this->addInfoMessage("Exhibition created.");
 
             } else {
                 $this->addErrorMessage("Cannot create exhibition.");
             }
         }
+        $this->renderViewAdmin(__FUNCTION__);
     }
 
-    public function createPainting($name, $image) {
+    public function createPainting() {
         $this->db = new PaintingsModel();
         if ($this->isPost()) {
             $name = $_POST['name'];
             $image = $_POST['image'];
-            if ($this->db->create($name, $image)) {
+            $comment = $_POST['comment'];
+            $exhibition = $_POST['exhibition'];
+            if ($this->db->create($name, $image, $comment, $exhibition)) {
                 $this->addInfoMessage("Painting created.");
 
             } else {
                 $this->addErrorMessage("Cannot create painting.");
             }
         }
+        $this->renderViewAdmin(__FUNCTION__);
     }
 
-    public function createEvent($name, $image, $comment) {
+    public function createEvent() {
         $this->db = new EventsModel();
         if ($this->isPost()) {
             $name = $_POST['name'];
             $image = $_POST['image'];
             $comment = $_POST['comment'];
-
-            if ($this->db->create($name, $image, $comment)) {
+            $text = $_POST['text'];
+            if ($this->db->create($name, $image, $comment, $text)) {
                 $this->addInfoMessage("Event created.");
 
             } else {
                 $this->addErrorMessage("Cannot create event.");
             }
         }
+        $this->renderViewAdmin(__FUNCTION__);
     }
 
-    public function editExhibition($id, $name, $date, $gallery, $comment, $image) {
-        $this->db = new ExhibitionsModel();
+    public function editAllExhibitions() {
+         $this->db = new ExhibitionsModel();
+        $this->exhibitions = $this->db->getAll();
+        $this->renderViewAdmin(__FUNCTION__);
+    }
 
+    public function editExhibition() {
+        $this->db = new ExhibitionsModel();
+        $id = $this->getFieldValue("id");
+        $this->exhibitions = $this->db->find($id);
+        $this->addFieldValue("name", $name);
+        if (!$this->exhibitions) {
+            $this->addErrorMessage("Invalid exhibition.");
+        }
         if ($this->isPost()) {
             $name = $_POST['name'];
             $date = $_POST['date'];
             $gallery = $_POST['gallery'];
             $comment = $_POST['comment'];
             $image = $_POST['image'];
-            if ($this->db->edit($id, $name, $date, $gallery, $comment, $image)) {
+            $text = $_POST['text'];
+            if ($this->db->edit($id, $name, $date, $gallery, $comment, $text, $image)) {
                 $this->addInfoMessage("Exhibition edited.");
             } else {
                 $this->addErrorMessage("Cannot edit exhibition.");
             }
         }
-        $this->exhibitions = $this->db->find($id);
-        if (!$this->exhibition) {
-            $this->addErrorMessage("Invalid exhibition.");
-        }
+
+            $this->renderViewAdmin(__FUNCTION__);
+
     }
 
 
-    public function editPainting($id, $name, $image) {
+    public function editPainting($id) {
         $this->db = new PaintingsModel();
 
         if ($this->isPost()) {
@@ -113,7 +159,7 @@ class AdminController extends BaseController
         }
     }
 
-    public function editEvent($id, $name, $image, $comment) {
+    public function editEvent($id) {
         $this->db = new EventsModel();
 
         if ($this->isPost()) {
@@ -167,4 +213,21 @@ class AdminController extends BaseController
 
     }
 
+    public function findLastCreatedExhibition() {
+        $this->db = new ExhibitionsModel();
+        $this->exhibitions = $this->db->findLast();
+        $this->renderView(__FUNCTION__, false);
+    }
+
+    public function findLastCreatedPainting() {
+        $this->db = new ExhibitionsModel();
+        $this->exhibitions = $this->db->findLast();
+        $this->renderView(__FUNCTION__, false);
+    }
+
+    public function findLastCreatedEvent() {
+        $this->db = new ExhibitionsModel();
+        $this->exhibitions = $this->db->findLast();
+        $this->renderView(__FUNCTION__, false);
+    }
 }

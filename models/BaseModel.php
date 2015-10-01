@@ -11,4 +11,6 @@ abstract class BaseModel {
             self::$db->set_charset("utf8");
         }
     }
+
+
 }

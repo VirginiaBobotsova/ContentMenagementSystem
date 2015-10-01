@@ -2,15 +2,19 @@
 
 
  class BaseController {
-    protected $controller;
-    protected $action;
-    protected $layout = DEFAULT_LAYOUT;
-    protected $viewBag = [];
-    protected $viewRendered = false;
-    protected $isPost = false;
-    protected $user;
-    protected $isLoggedIn;
+     protected $controller;
+     protected $action;
+     protected $layout = DEFAULT_LAYOUT;
+     protected $viewBag = [];
+     protected $viewRendered = false;
+     protected $isPost = false;
+     protected $user;
+     protected $isLoggedIn;
      protected $isAdmin = false;
+     protected $validationErrors;
+     protected $formValue;
+
+
 
     public function __construct($controller , $action) {
         $this->controller = $controller;
@@ -18,7 +22,7 @@
         $this->onInit();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->$isPost = true;
+            $this->isPost = true;
         }
         if (isset($_SESSION['username'])) {
             $this->$isLoggedIn = true;
@@ -59,9 +63,7 @@
             if ($viewName == null) {
                 $viewName = $this->action;
             }
-           if ($this->isAdmin()) {
-                $isPartial = false;
-            }
+
             if ($isPartial) {
                 include_once('views/layouts/' . $this->layout . '/header.php');
             }
@@ -73,6 +75,24 @@
 
         }
     }
+
+     public function renderViewAdmin($viewName = null, $isPartial = true) {
+         if (!$this->viewRendered) {
+             if ($viewName == null) {
+                 $viewName = $this->action;
+             }
+
+             if ($isPartial) {
+                 include_once('views/layouts/' . $this->layout . '/headerAdmin.php');
+             }
+             include_once('views/' . 'admin/' . $viewName . '.php');
+             if ($isPartial) {
+                 include_once('views/layouts/' . $this->layout . '/footerAdmin.php');
+             }
+             $this->viewRendered = true;
+
+         }
+     }
 
     protected function redirectToUrl($url) {
         header("Location: $url");
@@ -96,22 +116,6 @@
         return $_SERVER['REQUEST_METHOD'] == 'POST';
     }
 
-    private function addMessage($msgSessionkey, $msgText) {
-        if (!isset($_SESSION[$msgSessionkey])) {
-            $_SESSION[$msgSessionkey] = [];
-        }
-        array_push($_SESSION[$msgSessionkey], $msgText);
-
-    }
-
-    protected function addErrorMessage($errorMsg) {
-        $this->addMessage(ERROR_MESSAGES_SESSION_KEY, $errorMsg);
-    }
-
-    protected function addInfoMessage($infoMsg) {
-        $this->addMessage(INFO_MESSAGES_SESSION_KEY, $infoMsg);
-    }
-
     protected function isLoggedIn() {
         return isset($_SESSION['username']);
     }
@@ -132,4 +136,38 @@
             die('Administrator account is required!');
         }
     }
-}
+
+     protected function addValidationError($field, $message) {
+         $this->validationErrors[$field] = $message;
+     }
+
+     protected function getValidationErrors($field) {
+         return$this->validationErrors[$field];
+     }
+
+     protected function addFieldValue($field, $value) {
+         $this->formValue[$field] = $value;
+     }
+
+     protected function getFieldValue($field) {
+         return$this->formValue[$field];
+     }
+
+
+     private function addMessage($msgSessionkey, $msgText) {
+         if (!isset($_SESSION[$msgSessionkey])) {
+             $_SESSION[$msgSessionkey] = [];
+         }
+         array_push($_SESSION[$msgSessionkey], $msgText);
+
+     }
+
+     protected function addErrorMessage($errorMsg) {
+         $this->addMessage(ERROR_MESSAGES_SESSION_KEY, $errorMsg);
+     }
+
+     protected function addInfoMessage($infoMsg) {
+         $this->addMessage(INFO_MESSAGES_SESSION_KEY, $infoMsg);
+     }
+
+ }
